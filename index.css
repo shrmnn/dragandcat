@@ -1,5 +1,5 @@
 header {
-  height: 200px;
+  height: 10vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,11 +19,15 @@ img {
 body {
   background: rgb(17, 75, 206);
   margin: auto;
+  min-height: 100%;
+  height: 100%;
+
+  overflow: hidden;
+  touch-action: none;
 }
 
 .cat {
   background-color: whitesmoke;
-  background-image: url('https://loremflickr.com/500/500/cat');
   background-size: cover;
   position: relative;
   height: 100px;
@@ -34,6 +38,8 @@ body {
   outline: 5px mediumseagreen solid;
   outline-offset: -5px;
   z-index: 100;
+
+  touch-action: none;
 }
 
 .hold {
@@ -50,10 +56,13 @@ body {
 }
 
 .content {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-items: center;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 90vh;
+
 }
 
 .grid {
@@ -65,23 +74,21 @@ body {
   display: grid;
   grid-template-columns: 100px 100px 100px;
   grid-template-rows: 100px 100px 100px;
-}
 
-.grid .cat:nth-child(n + 10) {
-  display: none;
+  overflow: hidden;
 }
 
 .spawner {
   align-content: center;
-  height: 300px;
-  width: 300px;
+  height: 200px;
+  width: 200px;
 
   background-color: lightpink;
 }
 
 .spawner .cat {
-  height: 300px;
-  width: 300px;
+  height: 200px;
+  width: 200px;
 }
 
 .hoop {
