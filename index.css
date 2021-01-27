@@ -43,16 +43,7 @@ body {
 }
 
 .hold {
-  background-color: gainsboro;
-}
-
-.hovered {
-  background: #eeebeb;
-  border-style: dashed;
-}
-
-.center {
-  margin: auto;
+  filter: opacity(66%);
 }
 
 .content {
@@ -101,4 +92,30 @@ body {
 
 .absolute {
   position: absolute;
+}
+
+@media (min-width: 767px) {
+  .content {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 767px) {
+  .content {
+    flex-direction: column;
+  }
+
+}
+
+@media (max-height: 900px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .spawner,
+  .spawner .cat {
+    height: 100px;
+    width: 100px;
+  }
+
 }
