@@ -19,38 +19,40 @@ function dragEnd(event) {
   if (currentField === hoop) {
     rememberCatPosition(event);
   }
-  if (currentField !== grid && currentField !== spawner && currentField !== hoop) {
-    event.target.parentNode.removeChild(event.target);
-  }
 
   currentField = null;
 }
 
-function dragOver(e) {
-  e.preventDefault();
-
-  const active = document.querySelector('.hold');
-
-  const isMoveable = active && !currentField;
-
-  if (!isMoveable) return;
+function dragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
 }
 
-function dragEnter(e) {
+function dragEnter(event) {
   this.classList.add('hovered');
 
-  currentField = e.target;
+  currentField = this;
 }
 
-function dragLeave(e) {
+function dragLeave(event) {
   this.classList.remove('hovered');
 }
 
-function dragDrop(e) {
-  this.classList.remove('hovered');
-  e.target.append(cat);
+function dragDrop(event) {
+  event.stopPropagation();
 
-  if (!spawner.childElementCount) {
+  this.classList.remove('hovered');
+
+  console.log('event', this, event, event.target, currentField);
+
+  if (this !== spawner) {
+    this.append(cat);
+  } else if (this !== hoop && this !== grid) {
+    console.log('removed!', this);
+    cat.parentNode.removeChild(cat);
+  }
+
+  if (spawner.childElementCount <= 0) {
     createNewKitten(cat);
   }
 }
@@ -89,13 +91,6 @@ function allowElementToBeDraggable(element) {
   element.addEventListener('dragend', dragEnd);
 }
 
-function allowElementsToBeDraggable(elements) {
-  elements.forEach(el => {
-    el.addEventListener('dragstart', dragStart);
-    el.addEventListener('dragend', dragEnd);
-  });
-}
-
 function allowFieldsToBeDropAvailable(field) {
   field.addEventListener('dragover', dragOver);
   field.addEventListener('dragenter', dragEnter);
@@ -107,6 +102,7 @@ function main() {
   createNewKitten();
   allowFieldsToBeDropAvailable(grid);
   allowFieldsToBeDropAvailable(hoop);
+  allowFieldsToBeDropAvailable(spawner);
 }
 
 main();
