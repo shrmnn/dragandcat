@@ -33,6 +33,7 @@ body {
   display: inline-block;
   outline: 5px mediumseagreen solid;
   outline-offset: -5px;
+  z-index: 100;
 }
 
 .hold {
