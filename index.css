@@ -42,24 +42,31 @@ body {
   touch-action: none;
 }
 
-.hold {
+._absolute {
+  position: absolute;
+}
+
+._hold {
   filter: opacity(66%);
 }
 
-.content {
+.contentContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   height: 100%;
   min-height: 90vh;
-
 }
 
-.grid {
+.element {
   height: 300px;
   width: 300px;
 
+  box-shadow: 5px 5px yellow;
+}
+
+.element-grid {
   background-color: lightyellow;
 
   display: grid;
@@ -69,7 +76,7 @@ body {
   overflow: hidden;
 }
 
-.spawner {
+.element-spawner {
   align-content: center;
   height: 200px;
   width: 200px;
@@ -77,24 +84,18 @@ body {
   background-color: lightpink;
 }
 
-.spawner .cat {
+.element-spawner .cat {
   height: 200px;
   width: 200px;
 }
 
-.hoop {
-  height: 300px;
-  width: 300px;
-
+.element-hoop {
   background-color: lightskyblue;
 
   z-index: 0;
   position: relative;
 }
 
-.absolute {
-  position: absolute;
-}
 
 @media (min-width: 767px) {
   .content {
@@ -109,15 +110,22 @@ body {
 
 }
 
-@media (max-height: 900px) {
+@media (min-width: 767px) and (max-height: 900px) {
   .content {
     flex-direction: column;
   }
 
-  .spawner,
-  .spawner .cat {
+  .element {
+    height: 200px;
+  }
+
+  .element-grid {
+    grid-template-rows: 100px 100px;
+  }
+
+  .element-spawner,
+  .element-spawner .cat {
     height: 100px;
     width: 100px;
   }
-
 }
