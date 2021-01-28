@@ -11,7 +11,6 @@ module.exports = {
   // output bundles (location)
   output: {
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/dragandcat/',
     filename: 'bundle.js',
   },
 

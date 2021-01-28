@@ -1,6 +1,6 @@
 {
   "name": "JS_DD",
-  "version": "1.0.0",
+  "version": "1.0.129",
   "prettier": "prettier-airbnb-config",
   "description": "",
   "main": "./src/index.js",

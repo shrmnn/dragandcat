@@ -1,109 +1,134 @@
-const grid = document.querySelector('.grid');
-const hoop = document.querySelector('.hoop');
-const spawner = document.querySelector('.spawner');
+const grid = document.querySelector('.element-grid');
+const hoop = document.querySelector('.element-hoop');
+const spawner = document.querySelector('.element-spawner');
 
 let cat;
 let currentField;
 
-function dragStart() {
-  this.classList.add('hold');
-  cat = this;
-}
+const CENTEROFCAT = 50;
 
-function dragEnd(event) {
-  this.classList.remove('hold');
-  cat = null;
+const pointerDown = event => {
+  event.preventDefault();
 
-  forgetCatPosition(event);
+  cat = event.target;
+  cat.classList.add('_absolute');
+  cat.classList.add('_hold');
 
-  if (currentField === hoop) {
-    rememberCatPosition(event);
+  moveCat(cat, event);
+
+  document.addEventListener('pointermove', pointerMove);
+
+  cat.addEventListener('pointerup', pointerUp);
+  cat.ondragstart = () => false;
+};
+
+const pointerMove = event => {
+  event.preventDefault();
+
+  if (cat.parentNode === hoop) {
+    moveCat(cat, event, {x: hoop.offsetLeft, y: hoop.offsetTop});
+  } else {
+    moveCat(cat, event);
+  }
+};
+
+const pointerUp = event => {
+  event.preventDefault();
+
+  document.removeEventListener('pointermove', pointerMove);
+  cat.removeEventListener('pointerup', pointerUp);
+  cat.classList.remove('_hold');
+
+  [currentField] = document
+    .elementsFromPoint(event.clientX, event.clientY)
+    .filter(element => [grid, hoop].includes(element));
+
+  if (currentField === grid) {
+    forgetCatPosition(cat);
+    saveCat(cat);
   }
 
-  currentField = null;
+  if (currentField === hoop) {
+    rememberCatPosition(cat, event);
+    saveCat(cat);
+  }
+
+  if (!currentField || currentField === 'undefined') {
+    shelterCat(cat);
+  }
+
+  return;
+};
+
+function forgetCatPosition(cat) {
+  cat.classList.remove('_absolute');
+
+  cat.style.left = '0';
+  cat.style.top = '0';
 }
 
-function dragOver(event) {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'move';
+function saveCat(cat) {
+  currentField.append(cat);
+
+  if (spawner.childElementCount <= 0) {
+    createNewKitten();
+  }
 }
 
-function dragEnter(event) {
-  this.classList.add('hovered');
+function shelterCat(cat) {
+  cat.parentNode.removeChild(cat);
 
-  currentField = this;
+  if (spawner.childElementCount <= 0) {
+    createNewKitten();
+  }
 }
 
-function dragLeave(event) {
-  this.classList.remove('hovered');
-}
-
-function dragDrop(event) {
-  event.stopPropagation();
-
-  this.classList.remove('hovered');
-
-  console.log('event', this, event, event.target, currentField);
-
-  if (this !== spawner) {
-    this.append(cat);
-  } else if (this !== hoop && this !== grid) {
-    console.log('removed!', this);
+function rememberCatPosition(cat, event) {
+  if (cat.offsetX < 0 || cat.offsetY < 0) {
     cat.parentNode.removeChild(cat);
   }
 
-  if (spawner.childElementCount <= 0) {
-    createNewKitten(cat);
-  }
+  moveCat(cat, event, {
+    x: currentField.offsetLeft,
+    y: currentField.offsetTop,
+  });
 }
 
-function forgetCatPosition(cat) {
-  cat.target.classList.remove('absolute');
-
-  cat.target.style.left = '0';
-  cat.target.style.top = '0';
-}
-
-function rememberCatPosition(cat) {
-  cat.target.classList.add('absolute');
-
-  if (cat.offsetX < 0 || cat.offsetY < 0) {
-    cat.target.parentNode.removeChild(cat.target);
+function moveCat(
+  cat,
+  event,
+  pos = {
+    x: 0,
+    y: 0,
   }
-
-  cat.target.style.left = `${cat.offsetX - 50}px`;
-  cat.target.style.top = `${cat.offsetY - 50}px`;
+) {
+  cat.style.left = `${event.pageX - pos.x - CENTEROFCAT}px`;
+  cat.style.top = `${event.pageY - pos.y - CENTEROFCAT}px`;
 }
 
 function createNewKitten() {
   const newKitten = document.createElement('div');
   newKitten.className = 'cat';
-  newKitten.draggable = true;
   newKitten.style.outlineColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  fetchNewCat(newKitten);
 
   allowElementToBeDraggable(newKitten);
 
   spawner.append(newKitten);
 }
 
-function allowElementToBeDraggable(element) {
-  element.addEventListener('dragstart', dragStart);
-  element.addEventListener('dragend', dragEnd);
-}
+const fetchNewCat = newKitten => {
+  fetch('https://loremflickr.com/500/500/cat')
+    .then(result => (newKitten.style.backgroundImage = `url(${result.url})`))
+    .catch(error => console.error(error));
+};
 
-function allowFieldsToBeDropAvailable(field) {
-  field.addEventListener('dragover', dragOver);
-  field.addEventListener('dragenter', dragEnter);
-  field.addEventListener('dragleave', dragLeave);
-  field.addEventListener('drop', dragDrop);
+function allowElementToBeDraggable(element) {
+  element.addEventListener('pointerdown', pointerDown);
 }
 
 function main() {
   createNewKitten();
-  allowFieldsToBeDropAvailable(grid);
-  allowFieldsToBeDropAvailable(hoop);
-  allowFieldsToBeDropAvailable(spawner);
 }
 
 main();
-window.currentField = currentField;
